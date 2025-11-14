@@ -1,0 +1,70 @@
+{% extends "header.html" %}
+
+{% block content %}
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h1>Daftar Pelanggaran Demerit</h1>
+    {% if is_admin or is_staff %}
+    <a href="{% url 'pelanggaran_add' %}" class="btn btn-danger">Tambah Pelanggaran</a>
+    {% else %}
+    <p></p>
+    {% endif %}
+</div>
+
+<div class="card">
+    <div class="card-body">
+        <table class="table table-hover">
+            <thead>
+                <tr>
+                {% if is_admin or is_staff %}
+                    <th>User</th>
+                    <th>NIM</th>
+                    <th>Nama Lengkap</th>
+                {% else %}
+
+                {% endif %}
+                    <th>Pelanggaran</th>
+                    <th>Lingkup</th>
+                    <th>Poin</th>
+                    <th>Keterangan</th>
+                    <th>Tanggal</th>
+                    {% if is_admin or is_staff %}
+                    <th>Aksi</th>
+                    {% else %}
+
+                    {% endif %}
+                </tr>
+            </thead>
+            <tbody>
+                {% for p in pelanggaran_records %}
+                {% if is_admin or is_staff %}
+                <tr onclick="window.location.href='{% url 'pelanggaran_edit' p.id %}'" style="cursor: pointer;">
+                    <td>{{ p.user.username }}</td>
+                    <td>{{ p.user.nim }}</td>
+                    <td>{{ p.user.get_full_name }}</td>
+                {% else %}
+                <tr>
+
+                {% endif %}
+                    <td>{{ p.aturan_demerit.pelanggaran }}</td>
+                    <td>{{ p.aturan_demerit.lingkup }}</td>
+                    <td>{{ p.poin }}</td>
+                    <td>{{ p.keterangan }}</td>                  
+                    <td>{{ p.created_at|date:"d M Y" }}</td>
+                    {% if not is_admin or is_staff %}
+                    <td></td>
+                    {% else %}
+                    <td>
+                        <a href="{% url 'pelanggaran_edit' p.id %}" class="btn btn-sm btn-warning">Edit</a>
+                        <a href="{% url 'pelanggaran_delete' p.id %}" class="btn btn-sm btn-danger" onclick="return confirm('Are you sure you want to delete this violation?');">Delete</a>
+                    </td>
+                    {% endif %}
+                </tr>
+                {% empty %}
+                <tr><td colspan="5" class="text-center">Belum ada data.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}
